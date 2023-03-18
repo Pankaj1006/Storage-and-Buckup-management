@@ -1,0 +1,93 @@
+#Day 3 of Storage and Backup Management
+Q:-	If any laptop have data in its hardisk in which there are raids.If the hardware got damaged. 
+    	What can you do?
+Ans:-Plugged out from damged one and plug in into another one using kaddy etc.
+
+Q:-	If two servers are joined via FC switch and one of the server got off.How can you transfer vm 
+	installed in one server to another??
+Ans:-We can connect a storage devide to the switch which have VM that can be transfered from one to another.
+	This uses technology named as SAN(Storage Area Network).
+	First Protocol is FC(Fibre Cable).
+	Second Protocol is ISCSI()
+	Third Protocol is FCoE(Fibre Channel over Ethernet) aka CNA (converge network adapter)
+	Components of FCoE::CNA,Cable,FCoE Switch
+->windows have --ntfs,fat32
+->linux--xfs,ext4
+->Two kind of storage:::1.Block 2.Object Storage e.g. CEPH
+
+SAN:-
+Features,Types
+
+Backside of server have:
+Module is called SFP and connector is LC.
+SNIA--
+CNA- 
+Fibre Channel technology:-
+Dell EMC (Stimulator)-Storage Provider
+FC speed--initial stage 4GB/s
+CISCO nexus--
+FCIP Router--
+InfiniBand--
+
+iCSCI
+TrueNAS open-source platform to create network.
+openfiler
+intel SR-IOV --
+ASICs processor --
+Installation of TrueNas --
+1.Download the iso file of TrueNAS stable version.
+2.Create a VM select the iso file of TrueNAS.
+3.Custom VM installation
+4.Select for selection press Space,Change with TAB,Press Enter to continue.
+5.install the TrueNAS,Reboot system.
+6.Console setup you got the ip ,open in browser.
+	Enter username and password
+			root          hpcsa
+
+--------------------------TrueNAS Dashboard---------------------------------- 
+1.Storage--Add--Create Pool---name--suggest layout---select all--create
+
+2.Sharing--SAVE--Enable Service--
+
+3.Portal--NUMESH--Select IP : 0.0.0.0--Submit
+
+4.Initiator Groups --ADD-Allow All initiator--SAVE 
+
+5.Target --ADD--Basic Info--(Target Name-numesh-disk01-select iSCSI dropdowns)
+
+6.Extents(where data is actually save)--ADD
+	Basics Info- Name-Numesh Sahare
+7.Extent Type-File--make new folder-/mnt/HPCSA-LAB_03/newdisk-Give Filesize-SUBMIT
+
+8.Associated Targets--ADD-Select Target and Extent from dropdown-SUBMIT.
+All done go to service and start your iscsi. 
+9.Go to iSCSI initiator in Windows 
+	Input IP(of truenas)and Quick Connect--Done
+10.Go to Disk Management in Windows.Search for unallocted disk.
+	Right click and Create New Volume. Volla!!!!! You Get a Virtual Disk.	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
