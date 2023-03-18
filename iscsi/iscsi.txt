@@ -1,0 +1,26 @@
+ 6  yum install iscsi-initiator-utils
+    7  clear
+    8  iscsiadm -m discovery -t st -p 192.168.76.36 --login
+    9  iscsiadm -m discovery -t st -l
+   10  iscsiadm -m discovery -t st 192.168.76.36 -l
+   11  iscsiadm -m discovery -t st  192.168.76.36
+   12  clear
+   13  iscsiadm -m discovery -t st -p 192.168.76.36 --login
+   14  fdisk -l
+   15  fdisk /dev/sdd
+   16  mkdir /mnt/san-disk
+   17  mount /dev/sdd1 /mnt/san-disk/
+   18  mkfs.ext4 /dev/sdd1
+   19  mount /dev/sdd1 /mnt/san-disk/
+   20  clear
+   21  df -h
+   22  cat /etc/iscsi/initiatorname.iscsi
+   23  cat /etc/iscsi/iscsid.conf
+   24  nano /etc/iscsi/iscsid.conf
+   25  cat /etc/iscsi/iscsid.conf
+   26  cat /etc/iscsi/iscsid.conf | more
+   27  clear
+   28  fdisk -l
+   29  lsblk
+   30  history
+

@@ -1,0 +1,16 @@
+
+firewall-cmd --permanent --add-port=3260/tcp
+systemctl restart firwalld
+yum install targetcli
+systemctl enable target
+systemctl start target
+targetcli
+cd /backstores/block
+create name=LUN_1 dev=/dev/md1
+cd /iscsi 
+create
+cd /iscsi/iqn.2003-01.org.************
+cd tpg1/luns
+create /backstores/block/LUN_1 lun1
+cd /iscsi/iqn.2003-01.org.************/tpg1/acls 
+create iqn.***********windows

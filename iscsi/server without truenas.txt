@@ -1,0 +1,275 @@
+02/12/2022
+~~~~~~~~~~
+
+*two type of storage area network service: 1)fiber channel switches 2) iscsi(internet small computer system interface)
+
+
+/> ls
+o- / ........................................................................... [...]
+  o- backstores ................................................................ [...]
+  | o- block .................................................... [Storage Objects: 1]
+  | | o- block1  [/dev/mapper/vg_iscsi-lv_iscsi--disk--01 (1.0GiB) write-thru activated]
+  | |   o- alua ..................................................... [ALUA Groups: 1]
+  | |     o- default_tg_pt_gp ......................... [ALUA state: Active/optimized]
+  | o- fileio ................................................... [Storage Objects: 0]
+  | o- pscsi .................................................... [Storage Objects: 0]
+  | o- ramdisk .................................................. [Storage Objects: 0]
+  o- iscsi .............................................................. [Targets: 1]
+  | o- iqn.2022-12.cdac.acts.hpcsa.sbm:disk1 ............................... [TPGs: 1]
+  |   o- tpg1 ................................................. [no-gen-acls, no-auth]
+  |     o- acls ............................................................ [ACLs: 1]
+  |     | o- iqn.2022-12.acts.student:306631cea220 .................. [Mapped LUNs: 1]
+  |     |   o- mapped_lun0 .................................. [lun0 block/block1 (rw)]
+  |     o- luns ............................................................ [LUNs: 1]
+  |     | o- lun0  [block/block1 (/dev/mapper/vg_iscsi-lv_iscsi--disk--01) (default_tg_pt_gp)]
+  |     o- portals ...................................................... [Portals: 1]
+  |       o- 0.0.0.0:3260 ....................................................... [OK]
+  o- loopback ........................................................... [Targets: 0]
+/>
+
+
+  21  yum install tragetcli
+   22  clear
+   23  fdisk -l
+   24  clear
+   25  l
+   26  fdisk -l
+   27  pvcreate /dev/sdc /dev/sdb
+   28  vgcreate vg_iscsi /dev/sdb /dev/sdc
+   29  lvcreate -n lv_iscsi-disk-01 -l 1G vg_iscsi
+   30  lvcreate -n lv_iscsi-disk-01 -L 1G vg_iscsi
+   31  lvs
+   32  yum install tragetcli
+   33  yum install targetcli
+   34  firewall-cmd --permanent --add-port=3260/tcp
+   35  firewall-cmd --reload
+   36  clear
+   37  targetcli
+   38  cat /etc/target/saveconfig.json
+   39  targetcli
+   40  systemctl start target
+   41  systemctl status target
+   42  yum install net-tools
+   43  netstat -atpn
+   44  ip a
+   45  clear
+   46  history
+   47  targetc
+   48  targetcli
+   
+   
+   
+   lsblk for search new hardisk 
+[root@nfs-client ~]# lsblk
+NAME              MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+sda                 8:0    0   20G  0 disk
+├─sda1              8:1    0    1G  0 part  /boot
+└─sda2              8:2    0   19G  0 part
+  ├─centos-root   253:0    0   17G  0 lvm   /
+  └─centos-swap   253:1    0    2G  0 lvm   [SWAP]
+sdb                 8:16   0   20G  0 disk
+└─md127             9:127  0   20G  0 raid1
+  └─md127p1       259:0    0   20G  0 md
+sdc                 8:32   0   20G  0 disk
+└─md127             9:127  0   20G  0 raid1
+  └─md127p1       259:0    0   20G  0 md
+sdd                 8:48   0   20G  0 disk
+└─HPCSA-hpcsa_lab 253:2    0    3G  0 lvm   /root/lab
+sde                 8:64   0   20G  0 disk
+sr0                11:0    1  973M  0 rom
+
+
+pvcreate /dev/sdd /dev/sde --> for create physical volume
+vgcreate HPCSA /dev/sdd /dev/sde --> for create virtual group
+lvcreate -n hpcsa_lab --size 1G HPCSA -- for create logical volume
+
+
+fdisk /dev/mapper/HPCSA-hpcsa_lab
+
+press n and create new partition
+
+mkfs.ext4 /dev/mapper/HPCSA-hpcsa_lab
+
+mkdir lab
+mount /dev/mapper/HPCSA-hpcsa_lab lab
+
+
+lvextend -L +2G /dev/mapper/HPCSA-hpcsa_lab  - for extend logical volume
+resizefs /dev/mapper/HPCSA-hpcsa_lab
+
+lvcreate-L 1GB -s -n hpcsa_lab_snap /dev/mapper/HPCSA-hpcsa_lab
+
+lvconvert --merge /dev/mapper/HPCSA-hpcsa_lab
+
+
+
+ADD two new hardisk to centos system
+
+lsblk for search new hardisk 
+[root@nfs-client ~]# lsblk
+NAME              MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+sda                 8:0    0   20G  0 disk
+├─sda1              8:1    0    1G  0 part  /boot
+└─sda2              8:2    0   19G  0 part
+  ├─centos-root   253:0    0   17G  0 lvm   /
+  └─centos-swap   253:1    0    2G  0 lvm   [SWAP]
+sdb                 8:16   0   20G  0 disk
+└─md127             9:127  0   20G  0 raid1
+  └─md127p1       259:0    0   20G  0 md
+sdc                 8:32   0   20G  0 disk
+└─md127             9:127  0   20G  0 raid1
+  └─md127p1       259:0    0   20G  0 md
+sdd                 8:48   0   20G  0 disk
+└─HPCSA-hpcsa_lab 253:2    0    3G  0 lvm   /root/lab
+sde                 8:64   0   20G  0 disk
+sr0                11:0    1  973M  0 rom
+
+
+pvcreate /dev/sdd /dev/sde --> for create physical volume
+vgcreate HPCSA /dev/sdd /dev/sde --> for create virtual group
+lvcreate -n hpcsa_lab --size 1G HPCSA -- for create logical volume
+lvextend -L +2G /dev/mapper/HPCSA-hpcsa_lab  - for extend logical volume
+
+
+firewall-cmd --permanent --add-port=3260/tcp
+systemctl restart firwalld
+yum install targetcli
+systemctl enable target
+systemctl start target
+targetcli
+cd /backstores/block
+create name=LUN_1 dev=/dev/md1
+cd /iscsi 
+create
+cd /iscsi/iqn.2003-01.org.************
+cd tpg1/luns
+create /backstores/block/LUN_1 lun1
+cd /iscsi/iqn.2003-01.org.************/tpg1/acls 
+create iqn.***********windows
+
+
+USE CENTOS-7 Image
+
+#####on ISCSI CLIENT-#####
+yum install iscsi-initiator-utils
+cd /etc/iscsi/
+cat initiatorname.iscsi # change client name if required
+systemctl restart iscsi
+
+####on ISCSI Server##### 
+
+#add two 20GB HDD in VM
+fdisk -l
+pvcreate /dev/sdc /dev/sdb
+vgcreate vg_iscsi /dev/sdb /dev/sdc
+lvcreate -n lv_iscsi-disk-01 -l 1G vg_iscsi
+lvcreate -n lv_iscsi-disk-01 -L 1G vg_iscsi
+lvs
+
+yum install targetcli
+
+targetcli
+cd backstores/block
+create block1 /dev/mapper/vg_iscsi-lv_iscsi--disk--01
+cd iscsi
+create iqn.2022-12.cdac.acts.hpcsa.sbm:disk1
+cd iqn.2022-12.cdac.acts.hpcsa.sbm:disk1/tpg1/acls
+create iqn.2022-12.acts.student:306631cea220 #client PC iscsi initiator name
+cd iscsi/iqn.2022-12.cdac.acts.hpcsa.sbm:disk1/tpg1/luns
+create /backstores/block/block1
+exit
+systemctl restart target
+systemctl status target
+
+#Please excute on client system
+
+ iscsiadm -m -t st -p 192.168.76.XXX --login #XXX=server ip
+ iscsiadm -m discovery -t st -p 192.168.76.XXX --login #XXX=server IP
+ fdisk -l
+ fdisk /dev/sdx #use X=iscsi mount disk
+ #Press n then enter enter
+ #Press key w 
+ fdisk -l
+ mkdir /mnt/disk-1
+ mkfs.ext4 /dev/sdx1
+ mount /dev/sdh1 /mnt/disk-1/
+
+
+/> ls
+o- / ........................................................................... [...]
+  o- backstores ................................................................ [...]
+  | o- block .................................................... [Storage Objects: 1]
+  | | o- block1  [/dev/mapper/vg_iscsi-lv_iscsi--disk--01 (1.0GiB) write-thru activated]
+  | |   o- alua ..................................................... [ALUA Groups: 1]
+  | |     o- default_tg_pt_gp ......................... [ALUA state: Active/optimized]
+  | o- fileio ................................................... [Storage Objects: 0]
+  | o- pscsi .................................................... [Storage Objects: 0]
+  | o- ramdisk .................................................. [Storage Objects: 0]
+  o- iscsi .............................................................. [Targets: 1]
+  | o- iqn.2022-12.cdac.acts.hpcsa.sbm:disk1 ............................... [TPGs: 1]
+  |   o- tpg1 ................................................. [no-gen-acls, no-auth]
+  |     o- acls ............................................................ [ACLs: 1]
+  |     | o- iqn.2022-12.acts.student:306631cea220 .................. [Mapped LUNs: 1]
+  |     |   o- mapped_lun0 .................................. [lun0 block/block1 (rw)]
+  |     o- luns ............................................................ [LUNs: 1]
+  |     | o- lun0  [block/block1 (/dev/mapper/vg_iscsi-lv_iscsi--disk--01) (default_tg_pt_gp)]
+  |     o- portals ...................................................... [Portals: 1]
+  |       o- 0.0.0.0:3260 ....................................................... [OK]
+  o- loopback ........................................................... [Targets: 0]
+/>
+
+
+  21  yum install tragetcli
+   22  clear
+   23  fdisk -l
+   24  clear
+   25  l
+   26  fdisk -l
+   27  pvcreate /dev/sdc /dev/sdb
+   28  vgcreate vg_iscsi /dev/sdb /dev/sdc
+   29  lvcreate -n lv_iscsi-disk-01 -l 1G vg_iscsi
+   30  lvcreate -n lv_iscsi-disk-01 -L 1G vg_iscsi
+   31  lvs
+   32  yum install tragetcli
+   33  yum install targetcli
+   34  firewall-cmd --permanent --add-port=3260/tcp
+   35  firewall-cmd --reload
+   36  clear
+   37  targetcli
+   38  cat /etc/target/saveconfig.json
+   39  targetcli
+   40  systemctl start target
+   41  systemctl status target
+   42  yum install net-tools
+   43  netstat -atpn
+   44  ip a
+   45  clear
+   46  history
+   47  targetc
+   48  targetcli
+
+
+
+#on NFS Server
+yum install nfs-utils nano
+systemctl start nfs-server rpcbind
+systemctl enable nfs-server rpcbind
+mkdir /mnt/nfsshare
+chmod 777 /mnt/nfsshare/
+nano /etc/exports
+#add line in exports file --> /mnt/nfsshare 192.168.0.0/16(rw,sync,no_root_squash)
+
+exportfs -r
+firewall-cmd --permanent --add-service mountd
+firewall-cmd --permanent --add-service rpc-bind
+firewall-cmd --permanent --add-service nfs
+firewall-cmd --reload
+ 
+
+#on NFS Client 
+yum install nfs-utils
+showmount -e 192.168.76.xxx # it will show mount location
+mkdir /mnt/nfsdrive
+mount 192.168.76.xxx:/mnt/nfsshare /mnt/nfsdrive/
+mount | grep nfs
+df -h
